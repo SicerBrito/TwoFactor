@@ -13,7 +13,10 @@ public class UsuarioRepository : GenericRepository<Usuario>, IUsuario
         _Context = context;
     }
 
-    public async Task<Usuario?> GetByIdAsync(long id) => await _Context.FindAsync(id);
+    public async Task<Usuario?> GetByIdAsync(long id)
+    {
+        return await _Context.FindAsync<Usuario>(id);
+    }
 
 
     public async Task<Usuario> GetByRefreshTokenAsync(string refreshToken)
@@ -31,4 +34,5 @@ public class UsuarioRepository : GenericRepository<Usuario>, IUsuario
                             .Include(u => u.RefreshTokens)
                             .FirstOrDefaultAsync(u => u.Username!.ToLower()==username.ToLower()))!;
     }
+
 }

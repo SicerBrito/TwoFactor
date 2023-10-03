@@ -72,7 +72,7 @@ public class UsuarioController : BaseApiController
     public async Task<ActionResult> GetQR(long id){        
         
         try{
-            Usuario usuario = await _UnitOfWork.Usuarios!.Find(x => x.Id == id);
+            Usuario usuario = await _UnitOfWork.Usuarios!.FindFirst(x => x.Id == id);
             byte[] QR = _UserService.CreateQR(ref usuario);            
 
             _UnitOfWork.Usuarios.Update(usuario);
@@ -93,7 +93,7 @@ public class UsuarioController : BaseApiController
     public async Task<ActionResult> Verify([FromBody] AuthVerifyCodeDto data){        
         try{
 
-            Usuario usuario = await _UnitOfWork.Usuarios!.Find(x => x.Id == data.Id);
+            Usuario usuario = await _UnitOfWork.Usuarios!.FindFirst(x => x.Id == data.Id);
             if(usuario.TwoFactorSecret == null){
                 throw new ArgumentNullException(usuario.TwoFactorSecret);
             }

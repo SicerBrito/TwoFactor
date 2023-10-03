@@ -59,14 +59,14 @@ namespace Persistencia.Data.Configuracion;
                     Username = "Sicer Brito",
                     Email = "britodelgado514@gmail.com",
                     Password = "123456",
-                    CreatedDate = "2024-09-24"
+                    CreatedDate = new DateTime (2024,09,24)
                 },
                 new {
                     Id = 2,
                     Username = "Angelica Morales",
                     Email = "angedeveloper@gmail.com",
                     Password = "123",
-                    CreatedDate = "2024-09-24"
+                    CreatedDate = new DateTime (2024,09,24)
                 }
             );
         

@@ -8,10 +8,12 @@ namespace Aplicacion.Repository;
     public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity{
 
         private readonly DbAppContext _Context;
+        protected readonly DbSet<T> _Entity;
 
         public GenericRepository(DbAppContext context)
         {
             _Context = context;
+            _Entity = context.Set<T>();
         }
 
         public virtual void Add(T entity)
@@ -24,9 +26,17 @@ namespace Aplicacion.Repository;
             _Context.Set<T>().AddRange(entities);
         }
 
-        public virtual IEnumerable<T> Find(Expression<Func<T, bool>> expression)
+        public IEnumerable<T> Find(Expression<Func<T, bool>> expression)
         {
             return _Context.Set<T>().Where(expression);
+        }
+
+        public async virtual Task<T> FindFirst(Expression<Func<T, bool>> expression){
+            if (expression != null){
+                var result = await _Entity.Where(expression).ToListAsync();
+                return result.First();
+            }
+            return await _Entity.FirstAsync();
         }
 
         public virtual async Task<IEnumerable<T>> GetAllAsync()
@@ -69,5 +79,6 @@ namespace Aplicacion.Repository;
                 .ToListAsync();
             return (totalRegistros, registros);
         }
-        
-    }
+
+
+}
