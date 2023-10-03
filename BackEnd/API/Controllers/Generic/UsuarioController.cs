@@ -100,7 +100,7 @@ public class UsuarioController : BaseApiController
             var isVerified = _UserService.VerifyCode(usuario.TwoFactorSecret, data.Code);            
 
             if(isVerified == true){
-                return Ok("authenticated!!");
+                return Ok("autenticado PERRRO!!");
             }
 
             return Unauthorized();
