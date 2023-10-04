@@ -207,18 +207,186 @@
             ---
         2. Ahora crearemos el primer metodo:
 
+            ## Metodo 1
             - [HttpGet("QR/{id}")]  
-            Este atributo en el método GetQR indica que este método responderá a las solicitudes HTTP GET en la ruta /QR/{id}, donde {id} es un parámetro de la URL. Este método lo utilizaremos para obtener el código QR relacionado con un usuario.
+
+                Este atributo en el método GetQR indica que este método responderá a las solicitudes HTTP GET en la ruta /QR/{id}, donde {id} es un parámetro de la URL. Este método lo utilizaremos para obtener el código QR relacionado con un usuario.
+
+                ---
 
             - [ProducesResponseType(StatusCodes.Status200OK)]  
-            Este atributo indica el código de respuesta HTTP que va a devolver este metodo en caso de éxito (Status200OK).
+
+                Este atributo indica el código de respuesta HTTP que va a devolver este metodo en caso de éxito es (Status200OK).
+
+                ---
 
             - [ProducesResponseType(StatusCodes.Status400BadRequest)]  
-            Este atributo indica el código de respuesta HTTP que va a devolver este metodo en caso de error (Status400BadRequest).
+
+                Este atributo indica el código de respuesta HTTP que va a devolver este metodo en caso de error es (Status400BadRequest).
+
+                ---
+
+            - public async Task<ActionResult> GetQR(long id)  
+
+                Este es el método toma un parámetro id de tipo long, que representa el ID de un usuario y dentro del bloque try va a 
+
+                ### Bloque Try
+                - Usuario usuario = await _UnitOfWork.Usuarios!.FindFirst(x => x.Id == id);  
+
+                    Buscar un usuario en la base de datos utilizando el _UnitOfWork y el método FindFirst.
+
+                - byte[] QR = _UserService.CreateQR(ref usuario);  
+                
+                    Llamar al método _UserService.CreateQR(ref usuario) para crear un código QR basado en la información del usuario.
+
+                - _UnitOfWork.Usuarios.Update(usuario);  
+                
+                    Actualizar el usuario en la base de datos.
+
+                - await _UnitOfWork.SaveAsync();  
+
+                    Guardar los cambios en la base de datos de manera asincrónica utilizando _UnitOfWork.SaveAsync().
+
+                - return File(QR,"image/png");  
+
+                    Devolver el código QR como un archivo de tipo image/png en la respuesta.
+
+                    ---
+
+                ### Bloque Catch
+                - catch (Exception ex) 
+
+                    Si ocurre alguna excepción
+
+                - _Logger.LogError(ex.Message);  
+
+                    Se registra el mensaje de error utilizando _Logger
+
+                - return BadRequest("The QR code could not be generated");  
+
+                    Y se devuelve una respuesta HTTP 400 (BadRequest) con el mensaje "The QR code could not be generated". 
+
+            ```
+                [HttpGet("QR/{id}")]
+                [ProducesResponseType(StatusCodes.Status200OK)]
+                [ProducesResponseType(StatusCodes.Status400BadRequest)]    
+                public async Task<ActionResult> GetQR(long id){        
+                    
+                    try{
+                        Usuario usuario = await _UnitOfWork.Usuarios!.FindFirst(x => x.Id == id);
+                        byte[] QR = _UserService.CreateQR(ref usuario);            
+
+                        _UnitOfWork.Usuarios.Update(usuario);
+                        await _UnitOfWork.SaveAsync();
+                        return File(QR,"image/png");
+                    }
+                    catch (Exception ex){
+                        _Logger.LogError(ex.Message);
+                        return BadRequest("The QR code could not be generated");
+                    }    
+                }
+
+            ```
 
             ---
 
-        
+            ## Metodo 2
+            - [HttpGet("Verify")]  
 
+                Este atributo en el método Verify indica que este método responderá a las solicitudes HTTP GET en la ruta /Verify. Este método se utilizara para verificar un código de autenticación de dos factores.
+
+                ---
+
+            - [ProducesResponseType(StatusCodes.Status200OK)]
+
+                Este atributo indica el código de respuesta HTTP que va a devolver este metodo en caso de éxito es (Status200OK).
+
+                ---
+
+            - [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+
+                Este atributo indica el código de respuesta HTTP que va a devolver este metodo en caso de falta de autorización es (Status401Unauthorized).
+
+                ---
+
+            - [ProducesResponseType(StatusCodes.Status400BadRequest)]
+
+                Este atributo indica el código de respuesta HTTP que va a devolver este metodo en caso de error es (Status400BadRequest).
+
+                ---
+
+            - public async Task<ActionResult> Verify([FromBody] AuthVerifyCodeDto data)
+
+                Este es el método toma un objeto AuthVerifyCodeDto como entrada desde el cuerpo de la solicitud HTTP.
+
+                ### Bloque Try
+
+                - Usuario usuario = await _UnitOfWork.Usuarios!.FindFirst(x => x.Id == data.Id);
+                
+                    Busca un usuario en la base de datos utilizando _UnitOfWork y el método FindFirst en función del ID proporcionado en data.Id.
+
+                - if(usuario.TwoFactorSecret == null){  
+                throw new ArgumentNullException(usuario.TwoFactorSecret);  
+                }
+                
+                    Verifica si el usuario tiene un secreto de autenticación de dos factores (TwoFactorSecret) no nulo. Si es nulo, se lanza una excepción.
+
+                - var isVerified = _UserService.VerifyCode(usuario.TwoFactorSecret, data.Code);
+                
+                    Llama al método _UserService.VerifyCode para    verificar si el código proporcionado en data.Code coincide con el TwoFactorSecret del usuario.
+
+                - if(isVerified == true){  
+                return Ok("autenticado PERRRO!!");  
+                }
+
+                    Si la verificación es exitosa, devuelve una respuesta HTTP 200 (OK) con el mensaje "autenticado PERRRO!!".
+
+                - return Unauthorized();
+
+                    Si la verificación falla, devuelve una respuesta HTTP 401 (Unauthorized).
+
+                ---
+
+                ### Bloque Catch
+                - catch (Exception ex) 
+
+                    Si ocurre alguna excepción
+
+                - _Logger.LogError(ex.Message);  
+
+                    Se registra el mensaje de error utilizando _Logger
+
+                - return BadRequest("could not authenticate");  
+
+                    Y se devuelve una respuesta HTTP 400 (BadRequest) con el mensaje "could not authenticate".  
+
+                ---
+
+            ```
+                [HttpGet("Verify")]
+                [ProducesResponseType(StatusCodes.Status200OK)]
+                [ProducesResponseType(StatusCodes.Status401Unauthorized)]    
+                [ProducesResponseType(StatusCodes.Status400BadRequest)]    
+                public async Task<ActionResult> Verify([FromBody] AuthVerifyCodeDto data){        
+                    try{
+
+                        Usuario usuario = await _UnitOfWork.Usuarios!.FindFirst(x => x.Id == data.Id);
+                        if(usuario.TwoFactorSecret == null){
+                            throw new ArgumentNullException(usuario.TwoFactorSecret);
+                        }
+                        var isVerified = _UserService.VerifyCode(usuario.TwoFactorSecret, data.Code);            
+
+                        if(isVerified == true){
+                            return Ok("autenticado PERRRO!!");
+                        }
+
+                        return Unauthorized();
+                    }
+                    catch (Exception ex){
+                        _Logger.LogError(ex.Message);
+                        return BadRequest("some wrong");
+                    }  
+                }
+            ```
 
     ---

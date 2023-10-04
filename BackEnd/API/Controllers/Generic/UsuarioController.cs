@@ -36,7 +36,7 @@ public class UsuarioController : BaseApiController
         }
         catch (Exception ex){
             _Logger.LogError(ex.Message);
-            return BadRequest("some wrong");
+            return BadRequest("The QR code could not be generated");
         }  
                                
     }
