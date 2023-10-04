@@ -1,4 +1,3 @@
-
 namespace Dominio.Entities;
     public class Usuario : BaseEntity{
         
