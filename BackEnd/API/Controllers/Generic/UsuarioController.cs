@@ -55,14 +55,33 @@ public class UsuarioController : BaseApiController
             var isVerified = _UserService.VerifyCode(usuario.TwoFactorSecret, data.Code);            
 
             if(isVerified == true){
-                return Ok("autenticado PERRRO!!");
+                // Descargar una imagen desde una URL remota en caso de autenticación exitosa
+                using (var httpClient = new HttpClient())
+                {
+                    byte[] imageBytes2 = await httpClient.GetByteArrayAsync("https://http.cat/200");
+
+                    // Especificar el tipo de contenido de la respuesta como "image/png"
+                    Response.ContentType = "image/png";
+
+                    // Devolver los datos de imagen como un arreglo de bytes
+                    return File(imageBytes2, "image/png");
+                }
             }
 
-            return Unauthorized();
+            // Cargar una imagen en bytes (por ejemplo, una imagen PNG)
+            byte[] imageBytes = System.IO.File.ReadAllBytes("C:/Users/APM01-53/Documents/TwoFactor/BackEnd/Img/401.jpg");
+
+            // Devolver la imagen como respuesta con el tipo de contenido "image/png"
+            return File(imageBytes, "image/png");
+
         }
         catch (Exception ex){
             _Logger.LogError(ex.Message);
-            return BadRequest("some wrong");
+            // En caso de excepción, devolver una imagen como respuesta
+            // Puedes cargar una imagen diferente aquí si lo deseas
+            byte[] errorImageBytes = System.IO.File.ReadAllBytes("C:/Users/APM01-53/Documents/TwoFactor/BackEnd/Img/400.jpg");
+
+            return File(errorImageBytes, "image/png");
         }  
                                
     }
