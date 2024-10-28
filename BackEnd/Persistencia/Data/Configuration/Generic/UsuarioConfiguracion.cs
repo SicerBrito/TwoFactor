@@ -11,10 +11,10 @@ namespace Persistencia.Data.Configuracion;
             builder.ToTable("Usuario");
 
             builder.Property(p => p.Id)
-                .HasAnnotation("MySqlValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn)
                 .HasColumnName("Id_Usuario")
                 .HasColumnType("int")
-                .IsRequired();
+                .IsRequired()
+                .ValueGeneratedOnAdd();
 
             builder.Property(p => p.Username)
                 .HasColumnName("Username")
@@ -40,7 +40,8 @@ namespace Persistencia.Data.Configuracion;
         
             builder.Property(x => x.CreatedDate)
                 .IsRequired()
-                .HasColumnName("createDate");
+                .HasColumnName("createDate")
+                .HasColumnType("timestamptz");
                 
             builder.HasIndex(u => new{
                 u.Username,u.Email
@@ -59,14 +60,14 @@ namespace Persistencia.Data.Configuracion;
                     Username = "Sicer Brito",
                     Email = "britodelgado514@gmail.com",
                     Password = "123456",
-                    CreatedDate = new DateTime (2024,09,24)
+                    CreatedDate = new DateTime(2024, 09, 24, 0, 0, 0, DateTimeKind.Utc)
                 },
                 new {
                     Id = 2,
                     Username = "Angelica Morales",
                     Email = "angedeveloper@gmail.com",
                     Password = "123",
-                    CreatedDate = new DateTime (2024,09,24)
+                    CreatedDate = new DateTime(2024, 09, 24, 0, 0, 0, DateTimeKind.Utc)
                 }
             );
         

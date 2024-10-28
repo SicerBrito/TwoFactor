@@ -1,6 +1,6 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -9,63 +9,52 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Persistencia.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialCreate2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterDatabase()
-                .Annotation("MySql:CharSet", "utf8mb4");
-
             migrationBuilder.CreateTable(
                 name: "Rol",
                 columns: table => new
                 {
                     Id_Rol = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    NombreRol = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    NombreRol = table.Column<string>(type: "varchar", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Rol", x => x.Id_Rol);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "Usuario",
                 columns: table => new
                 {
                     Id_Usuario = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Username = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Email = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Password = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    twoFactorSecret = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    createDate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Username = table.Column<string>(type: "varchar", maxLength: 50, nullable: false),
+                    Email = table.Column<string>(type: "varchar", maxLength: 50, nullable: false),
+                    Password = table.Column<string>(type: "varchar", maxLength: 50, nullable: false),
+                    twoFactorSecret = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    createDate = table.Column<DateTime>(type: "timestamptz", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Usuario", x => x.Id_Usuario);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "RefreshToken",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    Token = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Expires = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Revoked = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                    Token = table.Column<string>(type: "text", nullable: true),
+                    Expires = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Revoked = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -76,8 +65,7 @@ namespace Persistencia.Data.Migrations
                         principalTable: "Usuario",
                         principalColumn: "Id_Usuario",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "RolUsuario",
@@ -101,15 +89,14 @@ namespace Persistencia.Data.Migrations
                         principalTable: "Usuario",
                         principalColumn: "Id_Usuario",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "UsuarioRol",
                 columns: table => new
                 {
                     Id_UsuarioRol = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Usuario_Id = table.Column<int>(type: "int", nullable: false),
                     Rol_Id = table.Column<int>(type: "int", nullable: false)
                 },
@@ -128,8 +115,7 @@ namespace Persistencia.Data.Migrations
                         principalTable: "Usuario",
                         principalColumn: "Id_Usuario",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.InsertData(
                 table: "Rol",
@@ -146,8 +132,8 @@ namespace Persistencia.Data.Migrations
                 columns: new[] { "Id_Usuario", "createDate", "Email", "Password", "twoFactorSecret", "Username" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 9, 24, 0, 0, 0, 0, DateTimeKind.Unspecified), "britodelgado514@gmail.com", "123456", null, "Sicer Brito" },
-                    { 2, new DateTime(2024, 9, 24, 0, 0, 0, 0, DateTimeKind.Unspecified), "angedeveloper@gmail.com", "123", null, "Angelica Morales" }
+                    { 1, new DateTime(2024, 9, 24, 0, 0, 0, 0, DateTimeKind.Utc), "britodelgado514@gmail.com", "123456", null, "Sicer Brito" },
+                    { 2, new DateTime(2024, 9, 24, 0, 0, 0, 0, DateTimeKind.Utc), "angedeveloper@gmail.com", "123", null, "Angelica Morales" }
                 });
 
             migrationBuilder.InsertData(

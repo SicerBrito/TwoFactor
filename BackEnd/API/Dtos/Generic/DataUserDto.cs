@@ -12,6 +12,6 @@ namespace API.Dtos;
 
         [JsonIgnore] // ->this attribute restricts the property to be shown in the result
         public string ? RefreshToken { get; set; }
-        public DateTime RefreshTokenExpiration { get; set; }  
+        public DateTime RefreshTokenExpiration { get; set; } = DateTime.UtcNow;
 
     }

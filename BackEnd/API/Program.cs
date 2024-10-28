@@ -45,11 +45,18 @@ builder.Services.AddAuthorization(opts =>{
 });
 
 //habilitamos la conexion a la base de datos 
+// builder.Services.AddDbContext<DbAppContext>(options =>
+// {
+//     string ? connectionString = builder.Configuration.GetConnectionString("ConexPostgreSql");
+//     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+// });
+
 builder.Services.AddDbContext<DbAppContext>(options =>
 {
-    string ? connectionString = builder.Configuration.GetConnectionString("ConexMysql");
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+    string? connectionString = builder.Configuration.GetConnectionString("ConexPostgreSql");
+    options.UseNpgsql(connectionString);
 });
+
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

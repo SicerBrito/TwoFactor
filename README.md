@@ -390,3 +390,57 @@
             ```
 
     ---
+
+
+
+- ### Migraciones    
+    Se deben utilizar estos comandos para poder aplicar las migraciones y que los cambios se guarden en la base de datos ✈️🔧
+
+    - ### Crear  
+        - Este comando genera una migración inicial llamada "NameMigration" utilizando Entity Framework Core. Las migraciones permiten mantener sincronizada la estructura de la base de datos con los cambios en el modelo de datos en proyectos .NET Core ✈️🔧
+            ```
+            dotnet ef migrations add NameMigration --project ./Persistencia/ --startup-project ./Api/ --output-dir ./Data/Migrations/  
+            ```
+            
+        ---
+
+    - ### Actualizar
+        - Este comando aplica las migraciones pendientes en la base de datos, lo que implica actualizar la estructura de la base de datos para que coincida con el estado actual del modelo de datos en los proyectos .NET Core involucrados. ✈️🔧
+            ```
+            dotnet ef database update --project ./Persistencia/ --startup-project ./Api/  
+            ```
+            
+        ---
+
+
+
+- ### Consultas mediante Postman    
+    Lo realice con Postam debido a que el Thunder no me permitia una compatibilidad con las imagenes (No tengo el Swagger implementado en estos momentos)
+
+    - ### Generar un codigo QR para un Usuario
+        - Con esta consulta GET genera un QR de autenticación para el usuario con el Id=1, este se escanea con la aplicacion de Authenticator de google en su version para moviles
+            ``` sql
+            http://localhost:5000/API/Sicer/Usuario/QR/1
+            ```
+            
+        ---
+
+    - ### Validar/Verificar el QR
+        - Esta consulta GET
+            ``` sql
+            http://localhost:5000/API/Sicer/Usuario/Verify
+            ```
+        
+            recibe dentro de los headers dentro de la Key un ```Content-Type``` y dentro del Value un ```application/json``` y dentro del body se le pasa dentro de Row un 
+
+            ```
+            {
+                "Code": "123456",
+                "Id": 1
+            }
+            ```
+
+            Al validar esto devuelve un estado 200
+
+            
+        ---
